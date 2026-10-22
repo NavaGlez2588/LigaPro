@@ -5,9 +5,101 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>LigaPro - Gestor de Torneos</title>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css" />
+  <style>
+:root{--primary:#0d9488;--primary-dark:#0f766e;--primary-light:#14b8a6;--accent:#f59e0b;--accent-hover:#d97706;--bg:#f1f5f9;--card:#fff;--text:#0f172a;--text-muted:#64748b;--border:#e2e8f0;--success:#10b981;--danger:#ef4444;--sidebar-w:250px}
+    *{margin:0;padding:0;box-sizing:border-box}
+    body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--text);line-height:1.5;min-height:100vh}
+    .sidebar{position:fixed;left:0;top:0;bottom:0;width:var(--sidebar-w);background:linear-gradient(180deg,#0f172a,#134e4a);color:#fff;display:flex;flex-direction:column;z-index:100;transition:transform .3s}
+    .sidebar-header{padding:1.15rem 1.35rem;display:flex;align-items:center;gap:.7rem;border-bottom:1px solid rgba(255,255,255,.1)}
+    .sidebar-logo{width:38px;height:38px;background:linear-gradient(135deg,var(--primary-light),var(--accent));border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:1.3rem}
+    .sidebar-brand{font-weight:800;font-size:1.25rem}
+    .sidebar-nav{flex:1;padding:.9rem .65rem;overflow-y:auto}
+    .nav-section{font-size:.68rem;text-transform:uppercase;letter-spacing:.08em;color:rgba(255,255,255,.35);padding:.7rem .7rem .3rem;font-weight:600}
+    .nav-item{display:flex;align-items:center;gap:.7rem;padding:.65rem .85rem;border-radius:9px;color:rgba(255,255,255,.72);cursor:pointer;font-weight:500;font-size:.9rem;transition:all .15s;margin-bottom:2px}
+    .nav-item:hover{background:rgba(255,255,255,.08);color:#fff}
+    .nav-item.active{background:var(--primary);color:#fff}
+    .nav-item .icon{font-size:1.1rem;width:22px;text-align:center}
+    .sidebar-footer{padding:.9rem 1.15rem;border-top:1px solid rgba(255,255,255,.1);font-size:.75rem;color:rgba(255,255,255,.4)}
+    .main{margin-left:var(--sidebar-w);min-height:100vh}
+    .topbar{background:#fff;padding:.8rem 1.5rem;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:50}
+    .topbar-title{font-weight:700;font-size:1.1rem}
+    .content{padding:1.35rem 1.5rem}
+    .btn{padding:.5rem 1rem;border-radius:8px;border:none;font-weight:600;cursor:pointer;font-size:.85rem;transition:all .15s;display:inline-flex;align-items:center;gap:.35rem;font-family:inherit}
+    .btn-primary{background:var(--primary);color:#fff}.btn-primary:hover{background:var(--primary-dark)}
+    .btn-accent{background:var(--accent);color:#1e293b}.btn-accent:hover{background:var(--accent-hover)}
+    .btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text)}.btn-outline:hover{background:#f8fafc}
+    .btn-sm{padding:.3rem .65rem;font-size:.78rem}
+    .btn-danger{background:var(--danger);color:#fff}
+    .card{background:var(--card);border-radius:13px;padding:1.15rem;border:1px solid var(--border);box-shadow:0 1px 3px rgba(0,0,0,.04);margin-bottom:1.1rem}
+    .card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:.9rem}
+    .card-title{font-weight:700;font-size:1rem}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:1.1rem}
+    .grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:.9rem}
+    .stat-card{background:var(--card);border-radius:13px;padding:1.15rem;border:1px solid var(--border);text-align:center}
+    .stat-card .value{font-size:1.65rem;font-weight:800;color:var(--primary)}
+    .stat-card .label{font-size:.78rem;color:var(--text-muted);margin-top:.2rem}
+    .tournaments-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:1.1rem}
+    .t-card{background:var(--card);border-radius:14px;overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:all .2s}
+    .t-card:hover{transform:translateY(-3px);box-shadow:0 10px 22px rgba(0,0,0,.08)}
+    .t-card-banner{height:85px;background:linear-gradient(135deg,var(--primary),#0f4c5c);display:flex;align-items:flex-end;padding:.9rem 1rem}
+    .t-card-banner h3{color:#fff;font-size:1.1rem;font-weight:700}
+    .t-card-body{padding:.9rem 1.05rem 1.1rem}
+    .badge{display:inline-block;padding:.18rem .55rem;border-radius:18px;font-size:.7rem;font-weight:600}
+    .badge-live{background:#dcfce7;color:#166534}.badge-finished{background:#f1f5f9;color:#475569}
+    .badge-registration{background:#fef3c7;color:#92400e}.badge-draft{background:#e0e7ff;color:#3730a3}
+    .t-meta{display:flex;gap:1.1rem;margin-top:.75rem;font-size:.82rem;color:var(--text-muted)}
+    .tabs{display:flex;gap:.2rem;background:#fff;border-radius:11px;padding:.28rem;margin-bottom:1.35rem;border:1px solid var(--border);overflow-x:auto}
+    .tab{padding:.6rem 1rem;border-radius:8px;cursor:pointer;font-weight:600;font-size:.84rem;color:var(--text-muted);white-space:nowrap;transition:all .15s}
+    .tab:hover{background:#f1f5f9;color:var(--text)}.tab.active{background:var(--primary);color:#fff}
+    .tab-panel{display:none}.tab-panel.active{display:block}
+    table{width:100%;border-collapse:collapse}
+    th,td{padding:.7rem .55rem;text-align:left;border-bottom:1px solid var(--border);font-size:.875rem}
+    th{font-size:.72rem;text-transform:uppercase;color:var(--text-muted);font-weight:600}
+    tr:last-child td{border-bottom:none}tr:hover td{background:#f8fafc}
+    .team-cell{display:flex;align-items:center;gap:.55rem}
+    .team-logo{width:28px;height:28px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:.68rem;font-weight:700;flex-shrink:0}
+    .match-row{display:flex;align-items:center;padding:.8rem .9rem;background:#f8fafc;border-radius:10px;margin-bottom:.55rem;border:1px solid var(--border);gap:.9rem;cursor:pointer}
+    .match-row:hover{background:#f1f5f9}
+    .match-team{flex:1;display:flex;align-items:center;gap:.45rem;font-weight:600;font-size:.9rem}
+    .match-team.home{justify-content:flex-end;text-align:right}
+    .match-score{min-width:65px;text-align:center;font-size:1.2rem;font-weight:800;color:var(--primary)}
+    .match-info{font-size:.72rem;color:var(--text-muted);text-align:center}
+    .form-group{margin-bottom:1.05rem}
+    .form-group label{display:block;font-weight:600;margin-bottom:.3rem;font-size:.84rem}
+    .form-group input,.form-group select,.form-group textarea{width:100%;padding:.6rem .85rem;border:1.5px solid var(--border);border-radius:8px;font-size:.9rem;font-family:inherit;background:#fff}
+    .form-group input:focus,.form-group select:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(13,148,136,.12)}
+    .form-row{display:grid;grid-template-columns:1fr 1fr;gap:.9rem}
+    .modal-overlay{position:fixed;inset:0;background:rgba(15,23,42,.55);display:none;align-items:center;justify-content:center;z-index:200;padding:1rem;backdrop-filter:blur(3px)}
+    .modal-overlay.active{display:flex}
+    .modal{background:#fff;border-radius:16px;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;box-shadow:0 25px 50px rgba(0,0,0,.25)}
+    .modal-lg{max-width:700px}
+    .modal-header{padding:1.15rem 1.35rem;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .modal-header h2{font-size:1.15rem;font-weight:700}
+    .modal-close{background:none;border:none;font-size:1.4rem;cursor:pointer;color:var(--text-muted);width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center}
+    .modal-close:hover{background:#f1f5f9}
+    .modal-body{padding:1.35rem}
+    .modal-footer{padding:.9rem 1.35rem;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:.65rem}
+    .empty{text-align:center;padding:2.5rem 1.3rem;color:var(--text-muted)}
+    .empty .icon{font-size:2.5rem;margin-bottom:.65rem}
+    .page{display:none}.page.active{display:block}
+    .page-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.35rem}
+    .page-header h1{font-size:1.4rem;font-weight:800}
+    .t-detail-header{background:linear-gradient(135deg,var(--primary),#0f4c5c);color:#fff;border-radius:14px;padding:1.5rem;margin-bottom:1.35rem}
+    .t-detail-header h1{font-size:1.5rem;font-weight:800;margin-bottom:.3rem}
+    .t-detail-header .subtitle{opacity:.9;font-size:.92rem}
+    .t-detail-stats{display:flex;gap:1.75rem;margin-top:1.1rem}
+    .t-detail-stats .s-value{font-size:1.3rem;font-weight:800}
+    .t-detail-stats .s-label{font-size:.72rem;opacity:.8}
+    .sponsor-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:.9rem}
+    .sponsor-item{background:#f8fafc;border:1px dashed var(--border);border-radius:11px;padding:1.1rem;text-align:center;font-size:.82rem;color:var(--text-muted)}
+    .menu-toggle{display:none;background:none;border:none;font-size:1.35rem;cursor:pointer}
+    .sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:90}
+    .sidebar-overlay.active{display:block}
+    @media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.menu-toggle{display:block}.grid-2,.grid-4{grid-template-columns:1fr}.form-row{grid-template-columns:1fr}.t-detail-stats{flex-wrap:wrap;gap:.9rem}}
+  </style>
 </head>
 <body>
+
 <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header"><div class="sidebar-logo">🏆</div><div class="sidebar-brand">LigaPro</div></div>
@@ -219,13 +311,299 @@
 </div>
 
 
-  <!-- Firebase SDK (compat para no necesitar bundler) -->
+  
+  <!-- Firebase SDK -->
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+  <script>
+/**
+ * LigaPro – Configuración de Firebase
+ * ------------------------------------
+ * 1. https://console.firebase.google.com → Crear proyecto
+ * 2. Añadir app Web → copiar la config aquí abajo
+ * 3. Crear Firestore Database (modo prueba al inicio)
+ * 4. Reglas de Firestore (desarrollo):
+ *
+ * rules_version = '2';
+ * service cloud.firestore {
+ *   match /databases/{database}/documents {
+ *     match /{document=**} {
+ *       allow read, write: if true;
+ *     }
+ *   }
+ * }
+ *
+ * Cuando termines las pruebas, activa Authentication y restringe las reglas.
+ */
 
-  <script src="js/firebase-config.js"></script>
-  <script src="js/data.js"></script>
-  <script src="js/app.js"></script>
+// ⚠️ REEMPLAZA con los datos de tu proyecto
+const firebaseConfig = {
+  apiKey: "TU_API_KEY",
+  authDomain: "TU_PROYECTO.firebaseapp.com",
+  projectId: "TU_PROYECTO",
+  storageBucket: "TU_PROYECTO.appspot.com",
+  messagingSenderId: "123456789",
+  appId: "1:123456789:web:abcdef"
+};
 
+// Pon true cuando hayas pegado tu config real
+const USE_FIREBASE = false;
+
+  </script>
+  <script>
+/**
+ * LigaPro – Capa de datos (Local + Firebase Firestore)
+ * Sincronización en tiempo real cuando USE_FIREBASE = true
+ */
+
+// ----- Config (edita js/firebase-config.js o sobrescribe aquí) -----
+let USE_FIREBASE = false;
+let db = null;
+let unsubscribeTournaments = null;
+
+const LOCAL_KEY = 'ligapro_tournaments_v1';
+
+const DEFAULT_TOURNAMENTS = [
+  {
+    id: 1,
+    name: "Liga Comunitaria 2026",
+    sport: "Fútbol",
+    format: "Liga",
+    type: "simple",
+    status: "live",
+    groups: 1,
+    visibility: "public",
+    teams: [
+      { id: 1, name: "Riverside FC", short: "RIV", played: 4, won: 3, drawn: 1, lost: 0, gf: 10, ga: 4, points: 10 },
+      { id: 2, name: "North United", short: "NOR", played: 4, won: 2, drawn: 2, lost: 0, gf: 7, ga: 4, points: 8 },
+      { id: 3, name: "South Stars", short: "SOU", played: 4, won: 1, drawn: 3, lost: 0, gf: 6, ga: 5, points: 6 },
+      { id: 4, name: "Westside FC", short: "WES", played: 4, won: 0, drawn: 3, lost: 1, gf: 3, ga: 5, points: 3 },
+      { id: 5, name: "Central City", short: "CEN", played: 4, won: 1, drawn: 1, lost: 2, gf: 5, ga: 7, points: 4 },
+      { id: 6, name: "East Rovers", short: "EAS", played: 4, won: 0, drawn: 2, lost: 2, gf: 2, ga: 8, points: 2 }
+    ],
+    matches: [
+      { id: 1, home: "Riverside FC", away: "North United", homeScore: 2, awayScore: 1, round: "Jornada 4", date: "2026-10-18", status: "finished" },
+      { id: 2, home: "South Stars", away: "Westside FC", homeScore: 1, awayScore: 1, round: "Jornada 4", date: "2026-10-18", status: "finished" },
+      { id: 3, home: "Central City", away: "East Rovers", homeScore: 2, awayScore: 0, round: "Jornada 4", date: "2026-10-19", status: "finished" },
+      { id: 4, home: "Riverside FC", away: "South Stars", homeScore: null, awayScore: null, round: "Jornada 5", date: "2026-10-25", status: "scheduled" },
+      { id: 5, home: "North United", away: "Central City", homeScore: null, awayScore: null, round: "Jornada 5", date: "2026-10-25", status: "scheduled" },
+      { id: 6, home: "Westside FC", away: "East Rovers", homeScore: null, awayScore: null, round: "Jornada 5", date: "2026-10-26", status: "scheduled" }
+    ],
+    players: [
+      { name: "R. Santos", team: "Riverside FC", goals: 8, yellow: 1, red: 0, assists: 3 },
+      { name: "G. Mendoza", team: "North United", goals: 5, yellow: 0, red: 0, assists: 2 },
+      { name: "L. Vargas", team: "South Stars", goals: 4, yellow: 2, red: 0, assists: 1 },
+      { name: "P. Álvarez", team: "Central City", goals: 3, yellow: 1, red: 0, assists: 0 },
+      { name: "M. Torres", team: "Riverside FC", goals: 3, yellow: 0, red: 0, assists: 4 },
+      { name: "J. Ruiz", team: "North United", goals: 2, yellow: 3, red: 1, assists: 1 }
+    ]
+  },
+  {
+    id: 2,
+    name: "Copa Verano eSports",
+    sport: "eSports",
+    format: "Eliminatorias",
+    type: "simple",
+    status: "registration",
+    groups: 1,
+    visibility: "public",
+    teams: [
+      { id: 1, name: "Team Alpha", short: "ALP", played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 },
+      { id: 2, name: "Team Beta", short: "BET", played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 },
+      { id: 3, name: "Team Gamma", short: "GAM", played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 },
+      { id: 4, name: "Team Delta", short: "DEL", played: 0, won: 0, drawn: 0, lost: 0, gf: 0, ga: 0, points: 0 }
+    ],
+    matches: [],
+    players: []
+  }
+];
+
+let tournaments = [];
+let onDataChange = null; // callback cuando cambian los datos
+
+function setOnDataChange(fn) {
+  onDataChange = fn;
+}
+
+function notify() {
+  if (typeof onDataChange === 'function') onDataChange(tournaments);
+}
+
+// ----- LocalStorage -----
+function loadLocal() {
+  try {
+    const raw = localStorage.getItem(LOCAL_KEY);
+    if (raw) {
+      tournaments = JSON.parse(raw);
+      return;
+    }
+  } catch (e) {}
+  tournaments = JSON.parse(JSON.stringify(DEFAULT_TOURNAMENTS));
+  saveLocal();
+}
+
+function saveLocal() {
+  try {
+    localStorage.setItem(LOCAL_KEY, JSON.stringify(tournaments));
+  } catch (e) {
+    console.warn('No se pudo guardar en localStorage', e);
+  }
+}
+
+// ----- Firebase -----
+async function initFirebase(config) {
+  if (!config || !config.apiKey || config.apiKey === 'TU_API_KEY') {
+    console.info('Firebase no configurado. Usando almacenamiento local.');
+    USE_FIREBASE = false;
+    loadLocal();
+    notify();
+    return false;
+  }
+
+  try {
+    // firebase ya debe estar cargado por CDN (compat)
+    if (typeof firebase === 'undefined') {
+      console.error('Firebase SDK no cargado');
+      loadLocal();
+      notify();
+      return false;
+    }
+    firebase.initializeApp(config);
+    db = firebase.firestore();
+    USE_FIREBASE = true;
+
+    // Listener en tiempo real
+    unsubscribeTournaments = db.collection('tournaments').onSnapshot(
+      (snap) => {
+        const list = [];
+        snap.forEach((doc) => {
+          list.push({ id: doc.id, ...doc.data() });
+        });
+        // Si la colección está vacía, sembrar datos de ejemplo una vez
+        if (list.length === 0) {
+          seedFirebase();
+          return;
+        }
+        // Normalizar id numérico si venía como string
+        tournaments = list.map((t) => ({
+          ...t,
+          id: isNaN(t.id) ? t.id : Number(t.id)
+        }));
+        notify();
+      },
+      (err) => {
+        console.error('Error Firestore:', err);
+        loadLocal();
+        notify();
+      }
+    );
+    return true;
+  } catch (e) {
+    console.error('Error iniciando Firebase:', e);
+    USE_FIREBASE = false;
+    loadLocal();
+    notify();
+    return false;
+  }
+}
+
+async function seedFirebase() {
+  if (!db) return;
+  const batch = db.batch();
+  DEFAULT_TOURNAMENTS.forEach((t) => {
+    const ref = db.collection('tournaments').doc(String(t.id));
+    batch.set(ref, t);
+  });
+  await batch.commit();
+  console.info('Datos de ejemplo cargados en Firestore');
+}
+
+async function saveTournament(tournament) {
+  if (USE_FIREBASE && db) {
+    const id = String(tournament.id);
+    await db.collection('tournaments').doc(id).set(tournament);
+  } else {
+    const idx = tournaments.findIndex((t) => t.id === tournament.id);
+    if (idx >= 0) tournaments[idx] = tournament;
+    else tournaments.unshift(tournament);
+    saveLocal();
+    notify();
+  }
+}
+
+async function deleteTournament(id) {
+  if (USE_FIREBASE && db) {
+    await db.collection('tournaments').doc(String(id)).delete();
+  } else {
+    tournaments = tournaments.filter((t) => t.id !== id);
+    saveLocal();
+    notify();
+  }
+}
+
+async function saveAllTournaments(list) {
+  tournaments = list;
+  if (USE_FIREBASE && db) {
+    const batch = db.batch();
+    list.forEach((t) => {
+      batch.set(db.collection('tournaments').doc(String(t.id)), t);
+    });
+    await batch.commit();
+  } else {
+    saveLocal();
+    notify();
+  }
+}
+
+function getTournaments() {
+  return tournaments;
+}
+
+function setTournaments(list) {
+  tournaments = list;
+}
+
+  </script>
+  <script>
+/**
+ * LigaPro – Lógica de la aplicación
+ * Usa js/data.js (local o Firebase en tiempo real)
+ */
+let currentTournamentId=null,currentMatchId=null;
+const pageTitles={home:'Inicio',tournaments:'Mis Torneos',explore:'Explorar',teams:'Equipos',players:'Jugadores',calendar:'Calendario',sponsors:'Patrocinadores',settings:'Configuración'};
+const SPORT_CRITERIA={'Fútbol':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'GF',ga:'GC',gd:'DG'},sort:(a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf||b.won-a.won,pointsWin:3,pointsDraw:1,pointsLoss:0,note:'Criterios FIFA/RFEF: 1º Puntos · 2º Diferencia de goles · 3º Goles a favor · 4º Victorias'},'Fútbol Sala':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'GF',ga:'GC',gd:'DG'},sort:(a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf,pointsWin:3,pointsDraw:1,pointsLoss:0,note:'Criterios FIFA Futsal'},'Fútbol 7':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'GF',ga:'GC',gd:'DG'},sort:(a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf,pointsWin:3,pointsDraw:1,pointsLoss:0,note:'Criterios Fútbol 7'},'Baloncesto':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'PF',ga:'PC',gd:'Dif'},sort:(a,b)=>b.won-a.won||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf,pointsWin:2,pointsDraw:1,pointsLoss:1,note:'Criterios FIBA: 2 pts victoria / 1 derrota'},'Voleibol':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'SF',ga:'SC',gd:'Sets'},sort:(a,b)=>b.points-a.points||b.won-a.won||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf,pointsWin:3,pointsDraw:0,pointsLoss:0,note:'Criterios FIVB'},'Vóley playa':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'SF',ga:'SC',gd:'Sets'},sort:(a,b)=>b.points-a.points||b.won-a.won||(b.gf-b.ga)-(a.gf-a.ga),pointsWin:2,pointsDraw:0,pointsLoss:0,note:'Criterios Beach Volleyball'},'Handball':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'GF',ga:'GC',gd:'DG'},sort:(a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf,pointsWin:2,pointsDraw:1,pointsLoss:0,note:'Criterios IHF'},'eSports':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'AF',ga:'EC',gd:'Dif'},sort:(a,b)=>b.points-a.points||b.won-a.won||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf,pointsWin:3,pointsDraw:1,pointsLoss:0,note:'Criterios eSports'},'Otro':{labels:{pts:'Pts',played:'PJ',won:'G',drawn:'E',lost:'P',gf:'AF',ga:'EC',gd:'Dif'},sort:(a,b)=>b.points-a.points||(b.gf-b.ga)-(a.gf-a.ga)||b.gf-a.gf,pointsWin:3,pointsDraw:1,pointsLoss:0,note:'Criterios generales'}};
+function getSportCriteria(s){return SPORT_CRITERIA[s]||SPORT_CRITERIA['Otro']}
+function sortTeams(teams,sport){return[...(teams||[])].sort(getSportCriteria(sport).sort)}
+function getTournamentsList(){return typeof getTournaments==='function'?getTournaments():[]}
+function navigate(p){document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.nav-item').forEach(x=>x.classList.remove('active'));const pg=document.getElementById('page-'+p);if(pg)pg.classList.add('active');const nv=document.querySelector('.nav-item[data-page="'+p+'"]');if(nv)nv.classList.add('active');document.getElementById('topbar-title').textContent=pageTitles[p]||'LigaPro';if(p==='home')renderHome();if(p==='tournaments')renderTournamentsList();document.getElementById('sidebar').classList.remove('open');document.getElementById('sidebar-overlay').classList.remove('active')}
+function toggleSidebar(){document.getElementById('sidebar').classList.toggle('open');document.getElementById('sidebar-overlay').classList.toggle('active')}
+function switchDetailTab(t){document.querySelectorAll('#detail-tabs .tab').forEach(x=>x.classList.remove('active'));document.querySelectorAll('.tab-panel').forEach(x=>x.classList.remove('active'));document.querySelector('#detail-tabs .tab[data-tab="'+t+'"]').classList.add('active');document.getElementById('dtab-'+t).classList.add('active')}
+function statusBadge(s){return{live:'<span class="badge badge-live">En curso</span>',finished:'<span class="badge badge-finished">Finalizado</span>',registration:'<span class="badge badge-registration">Inscripciones</span>',draft:'<span class="badge badge-draft">Borrador</span>'}[s]||''}
+function tournamentCardHTML(t){return`<div class="t-card" onclick="openTournament(${JSON.stringify(t.id)})"><div class="t-card-banner"><h3>${t.name}</h3></div><div class="t-card-body">${statusBadge(t.status)}<div style="margin-top:.45rem;font-size:.84rem;color:var(--text-muted)">${t.sport} · ${t.format}</div><div class="t-meta"><span>👥 ${(t.teams||[]).length}</span><span>⚽ ${(t.matches||[]).length}</span><span>👤 ${(t.players||[]).length}</span></div></div></div>`}
+function renderHome(){const list=getTournamentsList();document.getElementById('stat-tournaments').textContent=list.length;document.getElementById('stat-teams').textContent=list.reduce((a,t)=>a+(t.teams||[]).length,0);document.getElementById('stat-matches').textContent=list.reduce((a,t)=>a+(t.matches||[]).length,0);document.getElementById('stat-players').textContent=list.reduce((a,t)=>a+(t.players||[]).length,0);document.getElementById('home-tournaments').innerHTML=list.slice(0,3).map(tournamentCardHTML).join('')}
+function renderTournamentsList(){const list=getTournamentsList();const c=document.getElementById('tournaments-list');if(!list.length){c.innerHTML='<div class="empty" style="grid-column:1/-1"><div class="icon">🏆</div><h3>No tienes torneos</h3><br><button class="btn btn-primary" onclick="openCreateModal()">+ Crear</button></div>';return}c.innerHTML=list.map(tournamentCardHTML).join('')}
+function openTournament(id){currentTournamentId=id;const t=getTournamentsList().find(x=>x.id==id);if(!t)return;document.getElementById('td-name').textContent=t.name;document.getElementById('td-meta').textContent=t.sport+' · '+t.format;document.getElementById('td-teams').textContent=(t.teams||[]).length;document.getElementById('td-matches').textContent=(t.matches||[]).length;document.getElementById('td-players').textContent=(t.players||[]).length;document.getElementById('td-groups').textContent=t.groups||1;document.getElementById('set-name').value=t.name;document.getElementById('set-sport').value=t.sport;document.getElementById('set-format').value=t.format;document.getElementById('set-status').value=t.status;renderDetailOverview(t);renderDetailMatches(t);renderDetailStandings(t);renderDetailTeams(t);renderDetailPlayers(t);document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));document.getElementById('page-tournament-detail').classList.add('active');document.getElementById('topbar-title').textContent=t.name;switchDetailTab('overview')}
+function getCurrentTournament(){return getTournamentsList().find(x=>x.id==currentTournamentId)}
+function renderDetailOverview(t){const up=(t.matches||[]).filter(m=>m.status==='scheduled').slice(0,4);document.getElementById('overview-matches').innerHTML=up.length?up.map(m=>`<div class="match-row" onclick="openMatchResult(${m.id})"><div class="match-team home">${m.home}</div><div><div class="match-score">vs</div><div class="match-info">${m.round} · ${m.date}</div></div><div class="match-team">${m.away}</div></div>`).join(''):'<p style="color:var(--text-muted)">No hay partidos programados</p>';const sorted=sortTeams(t.teams,t.sport);const crit=getSportCriteria(t.sport);document.getElementById('overview-standings').innerHTML=sorted.length?`<table><thead><tr><th>#</th><th>Equipo</th><th>${crit.labels.pts}</th><th>${crit.labels.played}</th><th>${crit.labels.gd}</th></tr></thead><tbody>${sorted.slice(0,5).map((tm,i)=>`<tr><td>${i+1}</td><td><div class="team-cell"><div class="team-logo">${tm.short}</div>${tm.name}</div></td><td><strong>${tm.points}</strong></td><td>${tm.played}</td><td>${tm.gf-tm.ga>0?'+':''}${tm.gf-tm.ga}</td></tr>`).join('')}</tbody></table><p style="font-size:.72rem;color:var(--text-muted);margin-top:.5rem">${crit.note}</p>`:'<p style="color:var(--text-muted)">Sin equipos</p>';const scorers=[...(t.players||[])].sort((a,b)=>b.goals-a.goals).slice(0,5);document.getElementById('overview-scorers').innerHTML=scorers.length?`<table><thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th><th>Asist.</th></tr></thead><tbody>${scorers.map((p,i)=>`<tr><td>${i+1}</td><td><strong>${p.name}</strong></td><td>${p.team}</td><td>${p.goals}</td><td>${p.assists||0}</td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--text-muted)">Sin datos</p>';const cards=[...(t.players||[])].filter(p=>(p.yellow||0)+(p.red||0)>0).sort((a,b)=>((b.yellow||0)+(b.red||0)*2)-((a.yellow||0)+(a.red||0)*2)).slice(0,5);document.getElementById('overview-cards').innerHTML=cards.length?`<table><thead><tr><th>Jugador</th><th>Equipo</th><th>🟨</th><th>🟥</th></tr></thead><tbody>${cards.map(p=>`<tr><td><strong>${p.name}</strong></td><td>${p.team}</td><td>${p.yellow||0}</td><td>${p.red||0}</td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--text-muted)">Sin tarjetas</p>'}
+function renderDetailMatches(t){const c=document.getElementById('detail-matches');if(!(t.matches||[]).length){c.innerHTML='<div class="empty"><div class="icon">⚽</div><p>No hay partidos. Genera el calendario.</p></div>';return}c.innerHTML=t.matches.map(m=>{const score=m.status==='finished'?`<div class="match-score">${m.homeScore} - ${m.awayScore}</div>`:`<div class="match-score">vs</div>`;return`<div class="match-row" onclick="openMatchResult(${m.id})"><div class="match-team home">${m.home}</div><div>${score}<div class="match-info">${m.round} · ${m.date}${m.status==='finished'?' · Finalizado':''}</div></div><div class="match-team">${m.away}</div></div>`}).join('')}
+function renderDetailStandings(t){const sorted=sortTeams(t.teams,t.sport);const crit=getSportCriteria(t.sport);const isBasket=t.sport==='Baloncesto';const isVolley=t.sport==='Voleibol'||t.sport==='Vóley playa';if(!sorted.length){document.getElementById('detail-standings').innerHTML='<p style="color:var(--text-muted)">Agrega equipos</p>';return}let head,rows;if(isBasket){head='<tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>G</th><th>P</th><th>PF</th><th>PC</th><th>Dif</th></tr>';rows=sorted.map((tm,i)=>`<tr><td>${i+1}</td><td><div class="team-cell"><div class="team-logo">${tm.short}</div>${tm.name}</div></td><td><strong>${tm.points}</strong></td><td>${tm.played}</td><td>${tm.won}</td><td>${tm.lost}</td><td>${tm.gf}</td><td>${tm.ga}</td><td>${tm.gf-tm.ga>0?'+':''}${tm.gf-tm.ga}</td></tr>`).join('')}else if(isVolley){head='<tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>G</th><th>P</th><th>SF</th><th>SC</th><th>Sets</th></tr>';rows=sorted.map((tm,i)=>`<tr><td>${i+1}</td><td><div class="team-cell"><div class="team-logo">${tm.short}</div>${tm.name}</div></td><td><strong>${tm.points}</strong></td><td>${tm.played}</td><td>${tm.won}</td><td>${tm.lost}</td><td>${tm.gf}</td><td>${tm.ga}</td><td>${tm.gf-tm.ga>0?'+':''}${tm.gf-tm.ga}</td></tr>`).join('')}else{head='<tr><th>#</th><th>Equipo</th><th>Pts</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>GF</th><th>GC</th><th>DG</th></tr>';rows=sorted.map((tm,i)=>`<tr><td>${i+1}</td><td><div class="team-cell"><div class="team-logo">${tm.short}</div>${tm.name}</div></td><td><strong>${tm.points}</strong></td><td>${tm.played}</td><td>${tm.won}</td><td>${tm.drawn}</td><td>${tm.lost}</td><td>${tm.gf}</td><td>${tm.ga}</td><td>${tm.gf-tm.ga>0?'+':''}${tm.gf-tm.ga}</td></tr>`).join('')}document.getElementById('detail-standings').innerHTML=`<table><thead>${head}</thead><tbody>${rows}</tbody></table><p style="font-size:.75rem;color:var(--text-muted);margin-top:.75rem">📋 ${crit.note}</p>`}
+function renderDetailTeams(t){document.getElementById('detail-teams').innerHTML=(t.teams||[]).length?`<table><thead><tr><th>Equipo</th><th>PJ</th><th>G</th><th>E</th><th>P</th><th>Pts</th></tr></thead><tbody>${t.teams.map(tm=>`<tr><td><div class="team-cell"><div class="team-logo">${tm.short}</div>${tm.name}</div></td><td>${tm.played}</td><td>${tm.won}</td><td>${tm.drawn}</td><td>${tm.lost}</td><td><strong>${tm.points}</strong></td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--text-muted)">No hay equipos</p>'}
+function renderDetailPlayers(t){const sorted=[...(t.players||[])].sort((a,b)=>b.goals-a.goals);document.getElementById('detail-players').innerHTML=sorted.length?`<table><thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th><th>Asist.</th><th>🟨</th><th>🟥</th></tr></thead><tbody>${sorted.map((p,i)=>`<tr><td>${i+1}</td><td><strong>${p.name}</strong></td><td>${p.team}</td><td>${p.goals}</td><td>${p.assists||0}</td><td>${p.yellow||0}</td><td>${p.red||0}</td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--text-muted)">Sin estadísticas</p>'}
+function openCreateModal(){document.getElementById('create-modal').classList.add('active');document.getElementById('new-name').value='';document.getElementById('new-sport').value='Fútbol';document.getElementById('new-type').value='simple';document.getElementById('new-format').value='Liga';document.getElementById('new-groups').value=1;document.getElementById('new-status').value='registration';document.getElementById('new-visibility').value='private'}
+function closeCreateModal(){document.getElementById('create-modal').classList.remove('active')}
+async function createTournament(){const name=document.getElementById('new-name').value.trim();if(!name){alert('Escribe un nombre');return}const t={id:Date.now(),name,sport:document.getElementById('new-sport').value,format:document.getElementById('new-format').value,type:document.getElementById('new-type').value,status:document.getElementById('new-status').value,groups:parseInt(document.getElementById('new-groups').value)||1,visibility:document.getElementById('new-visibility').value,teams:[],matches:[],players:[]};await saveTournament(t);closeCreateModal();openTournament(t.id)}
+function openAddTeamModal(){document.getElementById('team-modal').classList.add('active');document.getElementById('team-name').value='';document.getElementById('team-short').value=''}
+function closeTeamModal(){document.getElementById('team-modal').classList.remove('active')}
+async function addTeam(){const t=getCurrentTournament();if(!t)return;const name=document.getElementById('team-name').value.trim();if(!name){alert('Escribe el nombre');return}let short=document.getElementById('team-short').value.trim().toUpperCase();if(!short)short=name.substring(0,3).toUpperCase();if(!t.teams)t.teams=[];t.teams.push({id:Date.now(),name,short,played:0,won:0,drawn:0,lost:0,gf:0,ga:0,points:0});await saveTournament(t);closeTeamModal();openTournament(t.id);switchDetailTab('teams')}
+function openMatchResult(matchId){const t=getCurrentTournament();if(!t)return;const m=(t.matches||[]).find(x=>x.id==matchId);if(!m)return;currentMatchId=matchId;document.getElementById('match-modal-title').textContent=m.home+' vs '+m.away;document.getElementById('match-home-label').textContent=m.home;document.getElementById('match-away-label').textContent=m.away;document.getElementById('match-home-score').value=m.homeScore??0;document.getElementById('match-away-score').value=m.awayScore??0;document.getElementById('match-modal').classList.add('active')}
+function closeMatchModal(){document.getElementById('match-modal').classList.remove('active');currentMatchId=null}
+async function saveMatchResult(){const t=getCurrentTournament();if(!t||currentMatchId==null)return;const m=t.matches.find(x=>x.id==currentMatchId);if(!m)return;m.homeScore=parseInt(document.getElementById('match-home-score').value)||0;m.awayScore=parseInt(document.getElementById('match-away-score').value)||0;m.status='finished';recalculateStandings(t);await saveTournament(t);closeMatchModal();openTournament(t.id);switchDetailTab('matches')}
+function recalculateStandings(t){const crit=getSportCriteria(t.sport);const pw=crit.pointsWin,pd=crit.pointsDraw,pl=crit.pointsLoss;(t.teams||[]).forEach(tm=>{tm.played=0;tm.won=0;tm.drawn=0;tm.lost=0;tm.gf=0;tm.ga=0;tm.points=0});(t.matches||[]).filter(m=>m.status==='finished').forEach(m=>{const home=t.teams.find(x=>x.name===m.home);const away=t.teams.find(x=>x.name===m.away);if(!home||!away)return;home.played++;away.played++;home.gf+=m.homeScore;home.ga+=m.awayScore;away.gf+=m.awayScore;away.ga+=m.homeScore;if(m.homeScore>m.awayScore){home.won++;home.points+=pw;away.lost++;away.points+=pl}else if(m.homeScore<m.awayScore){away.won++;away.points+=pw;home.lost++;home.points+=pl}else{home.drawn++;away.drawn++;home.points+=pd;away.points+=pd}})}
+async function generateMatches(){const t=getCurrentTournament();if(!t)return;if((t.teams||[]).length<2){alert('Necesitas al menos 2 equipos');return}if(!confirm('¿Generar partidos (todos contra todos)?'))return;t.matches=[];let id=Date.now();for(let i=0;i<t.teams.length;i++){for(let j=i+1;j<t.teams.length;j++){t.matches.push({id:id++,home:t.teams[i].name,away:t.teams[j].name,homeScore:null,awayScore:null,round:'Jornada auto',date:'2026-11-01',status:'scheduled'})}}await saveTournament(t);openTournament(t.id);switchDetailTab('matches')}
+async function saveTournamentSettings(){const t=getCurrentTournament();if(!t)return;t.name=document.getElementById('set-name').value.trim()||t.name;t.sport=document.getElementById('set-sport').value;t.format=document.getElementById('set-format').value;t.status=document.getElementById('set-status').value;await saveTournament(t);alert('Cambios guardados'+(typeof USE_FIREBASE!=='undefined'&&USE_FIREBASE?' en Firebase':' localmente'));openTournament(t.id)}
+async function deleteCurrentTournament(){if(!confirm('¿Eliminar este torneo?'))return;await deleteTournament(currentTournamentId);navigate('tournaments')}
+document.addEventListener('DOMContentLoaded',async()=>{['create-modal','team-modal','match-modal'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('active')})});if(typeof setOnDataChange==='function'){setOnDataChange(()=>{const active=document.querySelector('.page.active');if(!active)return;if(active.id==='page-home')renderHome();else if(active.id==='page-tournaments')renderTournamentsList();else if(active.id==='page-tournament-detail'&&currentTournamentId!=null)openTournament(currentTournamentId)})}const config=typeof firebaseConfig!=='undefined'?firebaseConfig:null;const useFb=typeof USE_FIREBASE!=='undefined'?USE_FIREBASE:false;if(useFb&&config&&config.apiKey&&config.apiKey!=='TU_API_KEY'){await initFirebase(config)}else{if(typeof loadLocal==='function')loadLocal();if(typeof notify==='function')notify();else renderHome()}});
+
+  </script>
 </body>
 </html>
