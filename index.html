@@ -337,7 +337,7 @@
  */
 
 // ⚠️ REEMPLAZA con los datos de tu proyecto
-const firebaseConfig = {
+window.firebaseConfig = {
   apiKey: "TU_API_KEY",
   authDomain: "TU_PROYECTO.firebaseapp.com",
   projectId: "TU_PROYECTO",
@@ -347,7 +347,7 @@ const firebaseConfig = {
 };
 
 // Pon true cuando hayas pegado tu config real
-const USE_FIREBASE = false;
+window.USE_FIREBASE = false;
 
   </script>
   <script>
@@ -357,7 +357,7 @@ const USE_FIREBASE = false;
  */
 
 // ----- Config (edita js/firebase-config.js o sobrescribe aquí) -----
-let USE_FIREBASE = false;
+var USE_FIREBASE = window.USE_FIREBASE === true;
 let db = null;
 let unsubscribeTournaments = null;
 
@@ -519,14 +519,26 @@ async function seedFirebase() {
 }
 
 async function saveTournament(tournament) {
-  if (USE_FIREBASE && db) {
-    const id = String(tournament.id);
-    await db.collection('tournaments').doc(id).set(tournament);
-  } else {
-    const idx = tournaments.findIndex((t) => t.id === tournament.id);
+  try {
+    if (USE_FIREBASE && db) {
+      const id = String(tournament.id);
+      await db.collection('tournaments').doc(id).set(tournament);
+    } else {
+      if (typeof tournaments === 'undefined' || !Array.isArray(tournaments)) tournaments = [];
+      const idx = tournaments.findIndex((t) => t.id == tournament.id);
+      if (idx >= 0) tournaments[idx] = tournament;
+      else tournaments.unshift(tournament);
+      saveLocal();
+      notify();
+    }
+  } catch (e) {
+    console.error('saveTournament error', e);
+    // fallback local
+    if (typeof tournaments === 'undefined' || !Array.isArray(tournaments)) tournaments = [];
+    const idx = tournaments.findIndex((t) => t.id == tournament.id);
     if (idx >= 0) tournaments[idx] = tournament;
     else tournaments.unshift(tournament);
-    saveLocal();
+    try { localStorage.setItem('ligapro_tournaments_v1', JSON.stringify(tournaments)); } catch(e2) {}
     notify();
   }
 }
@@ -591,7 +603,7 @@ function renderDetailTeams(t){document.getElementById('detail-teams').innerHTML=
 function renderDetailPlayers(t){const sorted=[...(t.players||[])].sort((a,b)=>b.goals-a.goals);document.getElementById('detail-players').innerHTML=sorted.length?`<table><thead><tr><th>#</th><th>Jugador</th><th>Equipo</th><th>Goles</th><th>Asist.</th><th>🟨</th><th>🟥</th></tr></thead><tbody>${sorted.map((p,i)=>`<tr><td>${i+1}</td><td><strong>${p.name}</strong></td><td>${p.team}</td><td>${p.goals}</td><td>${p.assists||0}</td><td>${p.yellow||0}</td><td>${p.red||0}</td></tr>`).join('')}</tbody></table>`:'<p style="color:var(--text-muted)">Sin estadísticas</p>'}
 function openCreateModal(){document.getElementById('create-modal').classList.add('active');document.getElementById('new-name').value='';document.getElementById('new-sport').value='Fútbol';document.getElementById('new-type').value='simple';document.getElementById('new-format').value='Liga';document.getElementById('new-groups').value=1;document.getElementById('new-status').value='registration';document.getElementById('new-visibility').value='private'}
 function closeCreateModal(){document.getElementById('create-modal').classList.remove('active')}
-async function createTournament(){const name=document.getElementById('new-name').value.trim();if(!name){alert('Escribe un nombre');return}const t={id:Date.now(),name,sport:document.getElementById('new-sport').value,format:document.getElementById('new-format').value,type:document.getElementById('new-type').value,status:document.getElementById('new-status').value,groups:parseInt(document.getElementById('new-groups').value)||1,visibility:document.getElementById('new-visibility').value,teams:[],matches:[],players:[]};await saveTournament(t);closeCreateModal();openTournament(t.id)}
+async function createTournament(){try{const name=document.getElementById('new-name').value.trim();if(!name){alert('Escribe un nombre');return}const t={id:Date.now(),name,sport:document.getElementById('new-sport').value,format:document.getElementById('new-format').value,type:document.getElementById('new-type').value,status:document.getElementById('new-status').value,groups:parseInt(document.getElementById('new-groups').value)||1,visibility:document.getElementById('new-visibility').value,teams:[],matches:[],players:[]};if(typeof saveTournament==='function'){await saveTournament(t)}else{if(typeof tournaments==='undefined')window.tournaments=[];tournaments.unshift(t);try{localStorage.setItem('ligapro_tournaments_v1',JSON.stringify(tournaments))}catch(e){}}closeCreateModal();openTournament(t.id);renderHome();renderTournamentsList()}catch(err){console.error(err);alert('Error al crear torneo: '+err.message)}}
 function openAddTeamModal(){document.getElementById('team-modal').classList.add('active');document.getElementById('team-name').value='';document.getElementById('team-short').value=''}
 function closeTeamModal(){document.getElementById('team-modal').classList.remove('active')}
 async function addTeam(){const t=getCurrentTournament();if(!t)return;const name=document.getElementById('team-name').value.trim();if(!name){alert('Escribe el nombre');return}let short=document.getElementById('team-short').value.trim().toUpperCase();if(!short)short=name.substring(0,3).toUpperCase();if(!t.teams)t.teams=[];t.teams.push({id:Date.now(),name,short,played:0,won:0,drawn:0,lost:0,gf:0,ga:0,points:0});await saveTournament(t);closeTeamModal();openTournament(t.id);switchDetailTab('teams')}
@@ -602,7 +614,7 @@ function recalculateStandings(t){const crit=getSportCriteria(t.sport);const pw=c
 async function generateMatches(){const t=getCurrentTournament();if(!t)return;if((t.teams||[]).length<2){alert('Necesitas al menos 2 equipos');return}if(!confirm('¿Generar partidos (todos contra todos)?'))return;t.matches=[];let id=Date.now();for(let i=0;i<t.teams.length;i++){for(let j=i+1;j<t.teams.length;j++){t.matches.push({id:id++,home:t.teams[i].name,away:t.teams[j].name,homeScore:null,awayScore:null,round:'Jornada auto',date:'2026-11-01',status:'scheduled'})}}await saveTournament(t);openTournament(t.id);switchDetailTab('matches')}
 async function saveTournamentSettings(){const t=getCurrentTournament();if(!t)return;t.name=document.getElementById('set-name').value.trim()||t.name;t.sport=document.getElementById('set-sport').value;t.format=document.getElementById('set-format').value;t.status=document.getElementById('set-status').value;await saveTournament(t);alert('Cambios guardados'+(typeof USE_FIREBASE!=='undefined'&&USE_FIREBASE?' en Firebase':' localmente'));openTournament(t.id)}
 async function deleteCurrentTournament(){if(!confirm('¿Eliminar este torneo?'))return;await deleteTournament(currentTournamentId);navigate('tournaments')}
-document.addEventListener('DOMContentLoaded',async()=>{['create-modal','team-modal','match-modal'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('active')})});if(typeof setOnDataChange==='function'){setOnDataChange(()=>{const active=document.querySelector('.page.active');if(!active)return;if(active.id==='page-home')renderHome();else if(active.id==='page-tournaments')renderTournamentsList();else if(active.id==='page-tournament-detail'&&currentTournamentId!=null)openTournament(currentTournamentId)})}const config=typeof firebaseConfig!=='undefined'?firebaseConfig:null;const useFb=typeof USE_FIREBASE!=='undefined'?USE_FIREBASE:false;if(useFb&&config&&config.apiKey&&config.apiKey!=='TU_API_KEY'){await initFirebase(config)}else{if(typeof loadLocal==='function')loadLocal();if(typeof notify==='function')notify();else renderHome()}});
+document.addEventListener('DOMContentLoaded',async()=>{['create-modal','team-modal','match-modal'].forEach(id=>{const el=document.getElementById(id);if(el)el.addEventListener('click',function(e){if(e.target===this)this.classList.remove('active')})});if(typeof setOnDataChange==='function'){setOnDataChange(()=>{const active=document.querySelector('.page.active');if(!active)return;if(active.id==='page-home')renderHome();else if(active.id==='page-tournaments')renderTournamentsList();else if(active.id==='page-tournament-detail'&&currentTournamentId!=null)openTournament(currentTournamentId)})}const config=typeof window.firebaseConfig!=='undefined'?window.firebaseConfig:(typeof firebaseConfig!=='undefined'?firebaseConfig:null);const useFb=window.USE_FIREBASE===true;if(useFb&&config&&config.apiKey&&config.apiKey!=='TU_API_KEY'){await initFirebase(config)}else{if(typeof loadLocal==='function')loadLocal();if(typeof notify==='function')notify();else renderHome()}});
 
   </script>
 </body>
