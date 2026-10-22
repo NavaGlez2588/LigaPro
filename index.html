@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LigaPro - Gestor de Torneos</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+<div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-header"><div class="sidebar-logo">🏆</div><div class="sidebar-brand">LigaPro</div></div>
+  <nav class="sidebar-nav">
+    <div class="nav-section">Principal</div>
+    <div class="nav-item active" data-page="home" onclick="navigate('home')"><span class="icon">🏠</span> Inicio</div>
+    <div class="nav-item" data-page="tournaments" onclick="navigate('tournaments')"><span class="icon">🏆</span> Mis Torneos</div>
+    <div class="nav-item" data-page="explore" onclick="navigate('explore')"><span class="icon">🔍</span> Explorar</div>
+    <div class="nav-section">Gestión</div>
+    <div class="nav-item" data-page="teams" onclick="navigate('teams')"><span class="icon">👥</span> Equipos</div>
+    <div class="nav-item" data-page="players" onclick="navigate('players')"><span class="icon">🧑‍🦱</span> Jugadores</div>
+    <div class="nav-item" data-page="calendar" onclick="navigate('calendar')"><span class="icon">📅</span> Calendario</div>
+    <div class="nav-section">Organización</div>
+    <div class="nav-item" data-page="sponsors" onclick="navigate('sponsors')"><span class="icon">🤝</span> Patrocinadores</div>
+    <div class="nav-section">Cuenta</div>
+    <div class="nav-item" data-page="settings" onclick="navigate('settings')"><span class="icon">⚙️</span> Configuración</div>
+  </nav>
+  <div class="sidebar-footer">LigaPro v1.0 · Inspirado en Copa Fácil</div>
+</aside>
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:.7rem">
+      <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+      <div class="topbar-title" id="topbar-title">Inicio</div>
+    </div>
+    <div class="topbar-actions"><button class="btn btn-accent" onclick="openCreateModal()">+ Nuevo Torneo</button></div>
+  </div>
+  <div class="content">
+    <div id="page-home" class="page active">
+      <div class="page-header"><h1>Bienvenido a LigaPro</h1></div>
+      <div class="grid-4" style="margin-bottom:1.5rem">
+        <div class="stat-card"><div class="value" id="stat-tournaments">0</div><div class="label">Torneos</div></div>
+        <div class="stat-card"><div class="value" id="stat-teams">0</div><div class="label">Equipos</div></div>
+        <div class="stat-card"><div class="value" id="stat-matches">0</div><div class="label">Partidos</div></div>
+        <div class="stat-card"><div class="value" id="stat-players">0</div><div class="label">Jugadores</div></div>
+      </div>
+      <div class="card"><div class="card-header"><div class="card-title">Torneos recientes</div><button class="btn btn-sm btn-outline" onclick="navigate('tournaments')">Ver todos</button></div>
+        <div id="home-tournaments" class="tournaments-grid"></div></div>
+    </div>
+    <div id="page-tournaments" class="page">
+      <div class="page-header"><h1>Mis Torneos</h1><button class="btn btn-primary" onclick="openCreateModal()">+ Nuevo Torneo</button></div>
+      <div id="tournaments-list" class="tournaments-grid"></div>
+    </div>
+    <div id="page-tournament-detail" class="page">
+      <div class="t-detail-header">
+        <button class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff;margin-bottom:.65rem" onclick="navigate('tournaments')">← Volver</button>
+        <h1 id="td-name">Torneo</h1>
+        <div class="subtitle" id="td-meta">Fútbol · Liga</div>
+        <div class="t-detail-stats">
+          <div><div class="s-value" id="td-teams">0</div><div class="s-label">Equipos</div></div>
+          <div><div class="s-value" id="td-matches">0</div><div class="s-label">Partidos</div></div>
+          <div><div class="s-value" id="td-players">0</div><div class="s-label">Jugadores</div></div>
+          <div><div class="s-value" id="td-groups">0</div><div class="s-label">Grupos</div></div>
+        </div>
+      </div>
+      <div class="tabs" id="detail-tabs">
+        <div class="tab active" data-tab="overview" onclick="switchDetailTab('overview')">Resumen</div>
+        <div class="tab" data-tab="matches" onclick="switchDetailTab('matches')">Partidos</div>
+        <div class="tab" data-tab="standings" onclick="switchDetailTab('standings')">Clasificación</div>
+        <div class="tab" data-tab="teams" onclick="switchDetailTab('teams')">Equipos</div>
+        <div class="tab" data-tab="players" onclick="switchDetailTab('players')">Jugadores</div>
+        <div class="tab" data-tab="categories" onclick="switchDetailTab('categories')">Categorías</div>
+        <div class="tab" data-tab="sponsors" onclick="switchDetailTab('sponsors')">Patrocinadores</div>
+        <div class="tab" data-tab="settings" onclick="switchDetailTab('settings')">Configuración</div>
+      </div>
+      <div id="dtab-overview" class="tab-panel active">
+        <div class="grid-2">
+          <div class="card"><div class="card-header"><div class="card-title">⚽ Próximos partidos</div></div><div id="overview-matches"></div></div>
+          <div class="card"><div class="card-header"><div class="card-title">📊 Clasificación (Top 5)</div></div><div id="overview-standings"></div></div>
+        </div>
+        <div class="grid-2">
+          <div class="card"><div class="card-header"><div class="card-title">⚽ Máximos goleadores</div></div><div id="overview-scorers"></div></div>
+          <div class="card"><div class="card-header"><div class="card-title">🟨 Tarjetas</div></div><div id="overview-cards"></div></div>
+        </div>
+      </div>
+      <div id="dtab-matches" class="tab-panel">
+        <div class="card">
+          <div class="card-header"><div class="card-title">Calendario de partidos</div>
+            <div style="display:flex;gap:.45rem">
+              <button class="btn btn-sm btn-outline" onclick="generateMatches()">⚡ Generar automáticamente</button>
+              <button class="btn btn-sm btn-primary" onclick="alert('Agregar partido manual')">+ Partido</button>
+            </div>
+          </div>
+          <div id="detail-matches"></div>
+        </div>
+      </div>
+      <div id="dtab-standings" class="tab-panel">
+        <div class="card"><div class="card-header"><div class="card-title">Tabla de posiciones</div>
+          <button class="btn btn-sm btn-outline" onclick="alert('Imprimir tabla')">🖨 Imprimir</button></div>
+          <div id="detail-standings"></div>
+        </div>
+      </div>
+      <div id="dtab-teams" class="tab-panel">
+        <div class="card"><div class="card-header"><div class="card-title">Equipos del torneo</div>
+          <button class="btn btn-sm btn-primary" onclick="openAddTeamModal()">+ Equipo</button></div>
+          <div id="detail-teams"></div>
+        </div>
+      </div>
+      <div id="dtab-players" class="tab-panel">
+        <div class="card"><div class="card-header"><div class="card-title">Rankings de jugadores</div></div><div id="detail-players"></div></div>
+      </div>
+      <div id="dtab-categories" class="tab-panel">
+        <div class="card"><div class="card-header"><div class="card-title">Categorías (edad / género)</div>
+          <button class="btn btn-sm btn-primary" onclick="alert('Agregar categoría')">+ Categoría</button></div>
+          <p style="color:var(--text-muted)">Crea divisiones por edad (Sub-12, Sub-15, Libre) o género.</p>
+        </div>
+      </div>
+      <div id="dtab-sponsors" class="tab-panel">
+        <div class="card"><div class="card-header"><div class="card-title">Patrocinadores</div>
+          <button class="btn btn-sm btn-primary" onclick="alert('Agregar patrocinador')">+ Patrocinador</button></div>
+          <div class="sponsor-grid">
+            <div class="sponsor-item">🏆 Sponsor Principal</div>
+            <div class="sponsor-item">🤝 Sponsor 2</div>
+            <div class="sponsor-item" style="cursor:pointer;border-style:dashed" onclick="alert('Agregar')">+ Agregar</div>
+          </div>
+        </div>
+      </div>
+      <div id="dtab-settings" class="tab-panel">
+        <div class="grid-2">
+          <div class="card">
+            <div class="card-title" style="margin-bottom:.9rem">Ajustes del torneo</div>
+            <div class="form-group"><label>Nombre</label><input type="text" id="set-name"/></div>
+            <div class="form-group"><label>Deporte</label>
+              <select id="set-sport"><option>Fútbol</option><option>Fútbol Sala</option><option>Fútbol 7</option><option>Baloncesto</option><option>Voleibol</option><option>Handball</option><option>eSports</option><option>Otro</option></select>
+            </div>
+            <div class="form-group"><label>Formato</label>
+              <select id="set-format"><option>Liga</option><option>Grupos + Eliminatorias</option><option>Eliminatorias</option></select>
+            </div>
+            <div class="form-group"><label>Estado</label>
+              <select id="set-status"><option value="registration">Inscripciones abiertas</option><option value="live">En curso</option><option value="finished">Finalizado</option><option value="draft">Borrador</option></select>
+            </div>
+            <button class="btn btn-primary" onclick="saveTournamentSettings()">Guardar cambios</button>
+          </div>
+          <div class="card">
+            <div class="card-title" style="margin-bottom:.9rem">Opciones</div>
+            <div style="display:flex;flex-direction:column;gap:.65rem">
+              <button class="btn btn-outline" style="justify-content:flex-start" onclick="alert('Enlace público')">🔗 Enlace público</button>
+              <button class="btn btn-outline" style="justify-content:flex-start" onclick="alert('Gráficos redes')">📱 Gráficos para redes</button>
+              <button class="btn btn-outline" style="justify-content:flex-start" onclick="alert('Documentos')">📎 Documentos / Reglamento</button>
+              <button class="btn btn-outline" style="justify-content:flex-start;color:var(--danger)" onclick="deleteCurrentTournament()">🗑️ Eliminar torneo</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="page-explore" class="page"><div class="page-header"><h1>Explorar</h1></div><div class="card"><p style="color:var(--text-muted)">Torneos públicos (Firebase).</p></div></div>
+    <div id="page-teams" class="page"><div class="page-header"><h1>Equipos</h1></div><div class="card"><p style="color:var(--text-muted)">Lista global de equipos.</p></div></div>
+    <div id="page-players" class="page"><div class="page-header"><h1>Jugadores</h1></div><div class="card"><p style="color:var(--text-muted)">Base de jugadores.</p></div></div>
+    <div id="page-calendar" class="page"><div class="page-header"><h1>Calendario</h1></div><div class="card"><p style="color:var(--text-muted)">Calendario general.</p></div></div>
+    <div id="page-sponsors" class="page"><div class="page-header"><h1>Patrocinadores</h1></div><div class="card"><div class="sponsor-grid"><div class="sponsor-item">🏆 Sponsor</div><div class="sponsor-item" style="cursor:pointer;border-style:dashed">+ Agregar</div></div></div></div>
+    <div id="page-settings" class="page"><div class="page-header"><h1>Configuración</h1></div>
+      <div class="grid-2">
+        <div class="card"><div class="card-title" style="margin-bottom:.9rem">Perfil organizador</div>
+          <div class="form-group"><label>Nombre</label><input type="text" value="Mi Organización"/></div>
+          <div class="form-group"><label>Descripción</label><textarea rows="3">Organizador de torneos</textarea></div>
+          <button class="btn btn-primary">Guardar</button>
+        </div>
+        <div class="card"><div class="card-title" style="margin-bottom:.9rem">Preferencias</div>
+          <div class="form-group"><label>Idioma</label><select><option>Español</option><option>English</option></select></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALS -->
+<div class="modal-overlay" id="create-modal">
+  <div class="modal modal-lg">
+    <div class="modal-header"><h2>Crear nuevo torneo</h2><button class="modal-close" onclick="closeCreateModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Nombre *</label><input type="text" id="new-name" placeholder="Liga Comunitaria 2026"/></div>
+      <div class="form-row">
+        <div class="form-group"><label>Deporte</label><select id="new-sport"><option>Fútbol</option><option>Fútbol Sala</option><option>Fútbol 7</option><option>Baloncesto</option><option>Voleibol</option><option>Handball</option><option>eSports</option><option>Otro</option></select></div>
+        <div class="form-group"><label>Tipo</label><select id="new-type"><option value="simple">Simple</option><option value="categories">Con categorías</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Formato</label><select id="new-format"><option value="Liga">Liga</option><option value="Grupos + Eliminatorias">Grupos + Eliminatorias</option><option value="Eliminatorias">Eliminatorias</option></select></div>
+        <div class="form-group"><label>Grupos</label><input type="number" id="new-groups" value="1" min="1" max="16"/></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label>Estado</label><select id="new-status"><option value="registration">Inscripciones</option><option value="draft">Borrador</option><option value="live">En curso</option></select></div>
+        <div class="form-group"><label>Visibilidad</label><select id="new-visibility"><option value="private">Privado</option><option value="public">Público</option></select></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeCreateModal()">Cancelar</button><button class="btn btn-primary" onclick="createTournament()">Crear</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="team-modal">
+  <div class="modal">
+    <div class="modal-header"><h2>Agregar equipo</h2><button class="modal-close" onclick="closeTeamModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-group"><label>Nombre *</label><input type="text" id="team-name" placeholder="Riverside FC"/></div>
+      <div class="form-group"><label>Abreviatura</label><input type="text" id="team-short" maxlength="3" placeholder="RIV"/></div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeTeamModal()">Cancelar</button><button class="btn btn-primary" onclick="addTeam()">Agregar</button></div>
+  </div>
+</div>
+<div class="modal-overlay" id="match-modal">
+  <div class="modal">
+    <div class="modal-header"><h2 id="match-modal-title">Resultado</h2><button class="modal-close" onclick="closeMatchModal()">×</button></div>
+    <div class="modal-body">
+      <div class="form-row">
+        <div class="form-group"><label id="match-home-label">Local</label><input type="number" id="match-home-score" min="0" value="0"/></div>
+        <div class="form-group"><label id="match-away-label">Visitante</label><input type="number" id="match-away-score" min="0" value="0"/></div>
+      </div>
+    </div>
+    <div class="modal-footer"><button class="btn btn-outline" onclick="closeMatchModal()">Cancelar</button><button class="btn btn-primary" onclick="saveMatchResult()">Guardar</button></div>
+  </div>
+</div>
+
+
+  <!-- Firebase SDK (compat para no necesitar bundler) -->
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.14.0/firebase-firestore-compat.js"></script>
+
+  <script src="js/firebase-config.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>
